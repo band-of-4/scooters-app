@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   resources :scooters
   resources :clients
+  resources :rentals
   root "scooters#index"
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

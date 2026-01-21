@@ -1,0 +1,51 @@
+<h1>Все аренды</h1>
+
+<%= link_to "Оформить аренду", new_rental_path, class: "new-button" %>
+
+<% if @rentals.any? %>
+  <ul class="rental-list" style="list-style: none; padding: 0;">
+    <% @rentals.each do |rental| %>
+      <li style="border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
+        <strong>
+          <%= link_to "Аренда ##{rental.id}", rental_path(rental) %>
+        </strong><br>
+
+        Клиент:
+        <%= link_to "#{rental.client.last_name} #{rental.client.first_name}", rental.client %><br>
+
+        Самокат:
+        <%= link_to rental.scooter.model, rental.scooter %><br>
+
+        Статус: <%= rental.status %><br>
+        Начало: <%= l rental.start_time %><br>
+
+        <% if rental.end_time %>
+          Конец: <%= l rental.end_time %><br>
+          Стоимость: <%= number_to_currency(rental.total_cost) %> руб
+        <% end %>
+        <br><br>
+
+        <%= link_to "Редактировать", edit_rental_path(rental) %> |
+        <%= link_to "Удалить", rental,
+              data: { turbo_method: :delete, turbo_confirm: "Удалить аренду?" } %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Аренд пока нет</p>
+<% end %>
+
+<%= link_to "Клиенты", clients_path, class: "new-button" %>
+<%= link_to "Самокаты", scooters_path, class: "new-button" %>
+
+<style>
+  .new-button {
+    display: inline-block;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+</style>
