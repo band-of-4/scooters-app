@@ -1,0 +1,41 @@
+<%= form_with model: @scooter do |f| %>
+  <% if @scooter.errors.any? %>
+    <div class="errors">
+      <h3><%= pluralize(@scooter.errors.count, "ошибка") %>:</h3>
+      <ul>
+        <% @scooter.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :model, "Модель" %><br>
+    <%= f.text_field :model %>
+  </div>
+
+  <div class="field">
+    <%= f.label :serial_number, "Серийный номер" %><br>
+    <%= f.text_field :serial_number %>
+  </div>
+
+  <div class="field">
+    <%= f.label :minute_rate, "Цена за минуту (руб)" %><br>
+    <%= f.number_field :minute_rate, step: 0.01 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :status, "Статус" %><br>
+    <%= f.select :status, options_for_select([["Доступен", "available"], ["В аренде", "in_use"], ["На обслуживании", "maintenance"]], @scooter.status) %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Сохранить" %>
+  </div>
+<% end %>
+
+<style>
+  .field { margin-bottom: 15px; }
+  .errors { color: red; margin-bottom: 20px; }
+</style>

@@ -1,27 +1,26 @@
-<h1>Доступные самокаты для аренды</h1>
+<h1>Все самокаты</h1>
+
+<%= link_to "Добавить новый самокат", new_scooter_path, class: "new-button" %>
 
 <% if @scooters.any? %>
   <ul class="scooter-list">
     <% @scooters.each do |scooter| %>
       <li class="scooter-item">
-        <strong><%= scooter.model %></strong> 
+        <strong><%= link_to scooter.model, scooter %></strong> 
         (№ <%= scooter.serial_number %>)<br>
         Цена: <%= number_to_currency(scooter.minute_rate) %> руб/мин<br>
-        <%= link_to "Подробнее", scooter_path(scooter) %> 
+        Статус: <%= scooter.status %><br>
+
+        <%= link_to "Подробнее", scooter_path(scooter) %>
+        <%= link_to "Редактировать", edit_scooter_path(scooter) %>
+        <%= link_to "Удалить", scooter, data: { turbo_method: :delete, turbo_confirm: "Точно удалить?" } %>
       </li>
     <% end %>
   </ul>
 <% else %>
-  <p>Пока нет доступных самокатов 😔</p>
+  <p>Нет самокатов</p>
 <% end %>
 
 <style>
-  .scooter-list { list-style: none; padding: 0; }
-  .scooter-item { 
-    border: 1px solid #ccc; 
-    padding: 15px; 
-    margin: 10px 0; 
-    border-radius: 8px; 
-    background: #f9f9f9; 
-  }
+  .new-button { display: inline-block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin-bottom: 20px; }
 </style>
