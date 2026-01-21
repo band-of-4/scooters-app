@@ -1,8 +1,8 @@
 class ScootersController < ApplicationController
   before_action :set_scooter, only: %i[show edit update destroy]
-  
+
   def index
-    @scooters = Scooter.where(status: "available")
+    @scooters = Scooter.all
   end
 
   def show

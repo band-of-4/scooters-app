@@ -1,0 +1,51 @@
+<%= form_with model: @client, local: true do |f| %>
+  <% if @client.errors.any? %>
+    <div class="errors" style="color: red; margin-bottom: 20px;">
+      <h3><%= pluralize(@client.errors.count, "ошибка") %>:</h3>
+      <ul>
+        <% @client.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :first_name, "Имя" %><br>
+    <%= f.text_field :first_name %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :last_name, "Фамилия" %><br>
+    <%= f.text_field :last_name %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :patronymic, "Отчество" %><br>
+    <%= f.text_field :patronymic %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :email %><br>
+    <%= f.email_field :email %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :phone, "Телефон" %><br>
+    <%= f.telephone_field :phone %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :date_of_birth, "Дата рождения" %><br>
+    <%= f.date_field :date_of_birth %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= f.label :balance, "Баланс (руб)" %><br>
+    <%= f.number_field :balance, step: 0.01 %>
+  </div>
+
+  <div class="actions" style="margin-top: 20px;">
+    <%= f.submit "Сохранить" %>
+  </div>
+<% end %>

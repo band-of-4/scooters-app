@@ -27,7 +27,7 @@
 
   <div class="field">
     <%= f.label :status, "Статус" %><br>
-    <%= f.select :status, options_for_select([["Доступен", "available"], ["В аренде", "in_use"], ["На обслуживании", "maintenance"]], @scooter.status) %>
+    <%= f.select :status, options_for_select([["Доступен", "available"], ["В аренде", "rented"], ["На обслуживании", "maintenance"]], @scooter.status) %>
   </div>
 
   <div class="actions">

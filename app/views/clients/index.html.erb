@@ -1,0 +1,30 @@
+<h1>Все клиенты</h1>
+
+<%= link_to "Добавить нового клиента", new_client_path, class: "new-button" %>
+
+<% if @clients.any? %>
+  <ul class="client-list" style="list-style: none; padding: 0;">
+    <% @clients.each do |client| %>
+      <li class="client-item" style="border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
+        <strong><%= link_to "#{client.last_name} #{client.first_name} #{client.patronymic}".strip, client %></strong><br>
+        Email: <%= client.email %><br>
+        Телефон: <%= client.phone %><br>
+        Баланс: <%= number_to_currency(client.balance) %> руб<br>
+        Аренд всего: <%= client.total_rentals_count %><br>
+
+        <%= link_to "Подробнее", client_path(client) %>
+        <%= link_to "Редактировать", edit_client_path(client) %> |
+        <%= link_to "Удалить", client, data: { turbo_method: :delete, turbo_confirm: "Точно удалить?" } %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Нет клиентов</p>
+<% end %>
+
+
+<%= link_to "Самокаты", scooters_path, class: "new-button" %>
+
+<style>
+  .new-button { display: inline-block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin-bottom: 20px; }
+</style>

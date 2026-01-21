@@ -1,0 +1,13 @@
+<h1>Клиент: <%= "#{@client.last_name} #{@client.first_name} #{@client.patronymic}".strip %></h1>
+
+<p>
+  <strong>Email:</strong> <%= @client.email %><br>
+  <strong>Телефон:</strong> <%= @client.phone %><br>
+  <strong>Дата рождения:</strong> <%= @client.date_of_birth %><br>
+  <strong>Баланс:</strong> <%= number_to_currency(@client.balance) %> руб<br>
+  <strong>Всего арендовал:</strong> <%= @client.total_rentals_count %> раз<br>
+  <strong>Всего потратил:</strong> <%= number_to_currency(@client.total_spent) %> руб<br>
+</p>
+
+
+<%= link_to "Назад к списку", clients_path %>
