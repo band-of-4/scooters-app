@@ -19,7 +19,7 @@ default: &default
   host: localhost
   port: 5432
   username: postgres
-  # password: тут не должно быть пароля или закомментировано
+  password: 123
 
 development:
   <<: *default

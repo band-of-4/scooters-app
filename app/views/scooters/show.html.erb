@@ -1,0 +1,9 @@
+<h1>Самокат <%= @scooter.model %></h1>
+
+<p>
+  <strong>Серийный номер:</strong> <%= @scooter.serial_number %><br>
+  <strong>Статус:</strong> <%= @scooter.status %><br>
+  <strong>Цена за минуту:</strong> <%= number_to_currency(@scooter.minute_rate) %> руб<br>
+</p>
+
+<%= link_to "Назад к списку", root_path %>
