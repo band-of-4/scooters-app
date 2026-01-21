@@ -1,0 +1,32 @@
+<h1>Активные аренды</h1>
+
+<% if @rentals.any? %>
+  <ul style="list-style: none; padding: 0;">
+    <% @rentals.each do |rental| %>
+      <li style="border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
+        <strong>Аренда #<%= rental.id %></strong><br>
+        Клиент: <%= link_to "#{rental.client.last_name} #{rental.client.first_name}", rental.client %><br>
+        Самокат: <%= link_to rental.scooter.model, rental.scooter %> (<%= rental.scooter.serial_number %>)<br>
+        Начало: <%= l rental.start_time %><br>
+        Статус: <%= rental.status %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Сейчас нет активных аренд</p>
+<% end %>
+
+<br>
+<%= link_to "Все аренды", rentals_path, class: "new-button" %>
+
+<style>
+  .new-button {
+    display: inline-block;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+</style>

@@ -26,6 +26,22 @@
 <%= link_to "Самокаты", scooters_path, class: "new-button" %>
 <%= link_to "Аренды", rentals_path, class: "new-button" %>
 
+<nav>
+  <%= link_to "Активные аренды", reports_active_rentals_path, class: "tab-link" %>
+  <%= link_to "Доход по дням", reports_revenue_path, class: "tab-link" %>
+  <%= link_to "Топ клиентов", reports_top_clients_path, class: "tab-link" %>
+</nav>
+
 <style>
   .new-button { display: inline-block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin-bottom: 20px; }
+  .tab-link {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  transition: all 0.2s;
+  font-weight: 500;
+}
 </style>
