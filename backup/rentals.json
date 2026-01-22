@@ -9,13 +9,5 @@
     "status": "completed",
     "total_cost": "12.0",
     "updated_at": "2026-01-21 22:30:55 UTC"
-  },
-  {
-    "start_time": "2005-02-22T22:02",
-    "client_id": "2",
-    "scooter_id": "2",
-    "end_time": "2005-02-22T22:05",
-    "status": "completed",
-    "id": 2
   }
 ]

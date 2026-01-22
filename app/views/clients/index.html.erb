@@ -12,7 +12,6 @@
         Баланс: <%= number_to_currency(client.balance) %> руб<br>
         Аренд всего: <%= client.total_rentals_count %><br>
 
-        <%= link_to "Подробнее", client_path(client) %>
         <%= link_to "Редактировать", edit_client_path(client) %> |
         <%= link_to "Удалить", client, data: { turbo_method: :delete, turbo_confirm: "Точно удалить?" } %>
       </li>

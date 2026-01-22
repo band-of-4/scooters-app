@@ -11,13 +11,10 @@
         end
 
         def create(attrs)
-          puts attrs
           Rental.create(attrs)
         end
 
         def update(id, attrs)
-          puts attrs
-          puts 'Postgre'
           rental = Rental.find(id)
           rental.update(attrs)
           rental

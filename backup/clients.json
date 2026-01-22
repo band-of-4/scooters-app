@@ -1,7 +1,14 @@
 [
-    {
-        "id":2,
-        "last_name": "Щеглов",
-        "first_name":"Дмитрий"
-    }
+  {
+    "id": 2,
+    "last_name": "Щеглов",
+    "first_name": "Дмитрий",
+    "patronymic": "Викторович",
+    "email": "speed.Dima05@gmail.com",
+    "phone": "+79180873921",
+    "date_of_birth": "2005-02-22",
+    "balance": "1002.0",
+    "total_spent": "0.0",
+    "total_rentals_count": "0"
+  }
 ]
