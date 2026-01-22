@@ -10,15 +10,15 @@
     </div>
   <% end %>
 
-  <div>
-    <%= f.label :client_id, "Клиент" %><br>
-    <%= f.collection_select :client_id, Client.all, :id, :last_name %>
+  <%# <div>
+    <%= f.label :client_id, "Клиент" ><br>
+    <%= f.collection_select :client_id, Client.all, :id, :last_name >
   </div>
 
   <div>
-    <%= f.label :scooter_id, "Самокат" %><br>
-    <%= f.collection_select :scooter_id, Scooter.all, :id, :model %>
-  </div>
+    <%= f.label :scooter_id, "Самокат" ><br>
+    <%= f.collection_select :scooter_id, Scooter.all, :id, :model >
+  </div> %>
 
   <div>
     <%= f.label :start_time, "Начало аренды" %><br>

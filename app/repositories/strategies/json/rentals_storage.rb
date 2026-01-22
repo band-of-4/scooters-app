@@ -1,3 +1,5 @@
+require "active_support/core_ext/hash"
+require "active_support/json"
 require 'ostruct'
   module Strategies
     module Json
@@ -5,16 +7,26 @@ require 'ostruct'
         FILE_PATH = Rails.root.join("backup", "rentals.json")
 
         def all
-          puts 'ALL'
-          load_data.map { |attrs| puts attrs["client_id"]
-            build_rental(attrs) }
+          puts '1'
+          load_data.map { |attrs| 
+            rental = Strategies::Json::Rental.new(attrs)
+            rental.client= find_client(attrs["client_id"])
+            rental.scooter= find_scooter(attrs["scooter_id"])
+            rental 
+          }
         end
 
         def find(id)
-          load_data.find { |r| r["id"] == id.to_i }
+          puts '2'
+          data = load_data.find { |r| r["id"] == id.to_i }
+          rental = Strategies::Json::Rental.new(data)
+          rental.client= find_client(data["client_id"])
+          rental.scooter= find_scooter(data["scooter_id"])
+          rental 
         end
 
         def create(attrs)
+          puts '3'
           data = load_data
 
           attrs["id"] = next_id(data)
@@ -25,8 +37,7 @@ require 'ostruct'
 
 
         def update(id, attrs)
-          puts attrs
-          puts 'JSON'
+          puts '4'
           data = load_data
           rental = data.find { |r| r["id"] == id.to_i }
           return nil unless rental
@@ -37,6 +48,7 @@ require 'ostruct'
         end
 
         def destroy(id)
+          puts '5'
           data = load_data
           data.reject! { |r| r["id"] == id.to_i }
           save_data(data)
@@ -44,38 +56,34 @@ require 'ostruct'
 
         private
 
-        def build_rental(attrs)
-          puts attrs["client_id"]
-          rental = OpenStruct.new(attrs)
-          def rental.client
-            @client ||= begin
-              client_data = JSON.parse(File.read(Rails.root.join("backup", "clients.json"))).find { |c| c["id"] == 2 }
-              puts 'Data right here'
-              puts client_data
-              OpenStruct.new(client_data) if client_data
-            end
-          end
-
-          def rental.scooter
-            @scooter ||= begin
-              scooter_data = JSON.parse(File.read(Rails.root.join("backup/scooters.json"))).find { |s| s["id"] == scooter_id }
-              OpenStruct.new(scooter_data) if scooter_data
-            end
-          end
-
-          def rental.persisted?
-            id.present?
-          end
-
-          rental
+        def find_client(id)
+          client_data = JSON.parse(File.read(Rails.root.join("backup", "clients.json"))).find { |c| c["id"] == id.to_i }
+          Strategies::Json::Client.new(client_data)
         end
+
+        def find_scooter(id)
+          scooter_data = JSON.parse(File.read(Rails.root.join("backup", "scooters.json"))).find { |c| c["id"] == id.to_i }
+          Strategies::Json::Scooter.new(scooter_data)
+        end
+
   
+        def ruby_string_to_hash(str)
+          cleaned = str
+            .gsub("=>", ":")
+            .gsub(/(\w+):/, '"\1":')
+
+          JSON.parse(cleaned)
+        end
+
+
         def load_data
           return [] unless File.exist?(FILE_PATH)
           JSON.parse(File.read(FILE_PATH))
         end
 
         def save_data(data)
+          puts "SAVING THEM"
+          #puts ruby_string_to_hash(data)
           File.write(FILE_PATH, JSON.pretty_generate(data))
         end
 

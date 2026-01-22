@@ -27,7 +27,7 @@ class RentalsRepository
     if default_storage.is_a?(Strategies::ActiveRecord::RentalsStorage)
       Rental.new(attrs)
     else
-      OpenStruct.new(attrs.merge(id: nil))
+      Strategies::Json::Rental.new(attrs.merge(id: nil))
     end
   end
 

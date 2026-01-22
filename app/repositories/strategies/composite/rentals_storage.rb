@@ -48,7 +48,6 @@
         def primary_alive?
           ::ActiveRecord::Base.connection.active?
         rescue
-          puts 'false'
           false
         end
       end
