@@ -1,10 +1,9 @@
 [
     {
         "id":1,
-        "model": "something"
-    },
-    {
-        "id":2,
-        "model": "something"
+        "model": "something",
+        "serial_number":"001",
+        "minute_rate":"5.00",
+        "status": "active"
     }
 ]

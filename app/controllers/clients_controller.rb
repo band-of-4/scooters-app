@@ -61,7 +61,7 @@ class ClientsController < ApplicationController
   end
 
   def new
-    @client = clients_repo.build()
+    @client = clients_repo.build(total_spent: "0", total_rentals_count: "0")
   end
 
   def create

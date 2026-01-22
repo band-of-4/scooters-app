@@ -1,10 +1,13 @@
 module Strategies
   module Json
     class Scooter
-      attr_accessor :id, :model
+      attr_accessor :id, :model, :serial_number, :minute_rate, :status
       def initialize(hash)
         @id = hash["id"]
         @model = hash["model"]
+        @serial_number = hash["serial_number"]
+        @minimum_rate = hash["minimum_rate"]
+        @status = hash["status"]
       end
 
       def to_model 
@@ -20,7 +23,11 @@ module Strategies
       end
       
       def persisted?
+        !@id.nil?
+      end
 
+      def errors
+        ActiveModel::Errors.new(self)
       end
     end
   end
