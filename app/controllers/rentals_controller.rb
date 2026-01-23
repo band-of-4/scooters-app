@@ -14,7 +14,7 @@ class RentalsController < ApplicationController
 
   def create
     @rental = Rental.new(rental_params)
-
+    @rental.state
     if @rental.save
       redirect_to @rental, notice: "Аренда успешно создана!"
     else
@@ -26,6 +26,7 @@ class RentalsController < ApplicationController
   end
 
   def update
+    @rental.state
     if @rental.update(rental_params)
       redirect_to @rental, notice: "Аренда успешно обновлена!"
     else
@@ -34,6 +35,7 @@ class RentalsController < ApplicationController
   end
 
   def destroy
+    @rental.state
     @rental.destroy
     redirect_to rentals_path, notice: "Аренда удалена!"
   end

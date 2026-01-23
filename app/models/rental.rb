@@ -3,19 +3,35 @@ class Rental < ApplicationRecord
   belongs_to :client
   
   validates :start_time, presence: true
-  validates :end_time, presence: true, if: -> { status == 'completed' }
+  validates :end_time, presence: true
   validates :status, presence: true, inclusion: { in: ['active', 'completed', 'cancelled'] }
   validates :total_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   
   validate :end_time_after_start_time
   validate :scooter_available_for_rental
   validate :client_has_sufficient_balance, on: [:create, :update]
+
+
   
   before_validation :calculate_total_cost, if: -> { end_time.present? && start_time.present? }
   
+
+  before_update :delegate_update_to_state
+
+  before_destroy :delegate_delete_to_state
+
+
   after_create :change_client
   after_destroy :refund_client
   after_update :recalculate_client_balance, if: :saved_change_to_total_cost?
+
+  def state
+    @state = case status
+               when 'active'    then ActiveRentalState.new(self)
+               when 'completed' then CompletedRentalState.new(self)
+               when 'cancelled' then CancelledRentalState.new(self)
+               end
+  end
 
   private
   
@@ -28,7 +44,7 @@ class Rental < ApplicationRecord
   end
   
   def scooter_available_for_rental
-    return if scooter.blank? || status == 'cancelled'
+    return if scooter.blank?
     
     if scooter.status != 'available' && new_record?
       errors.add(:available_error, 'не доступен для аренды')
@@ -81,6 +97,7 @@ class Rental < ApplicationRecord
       total_spent: client.total_spent - total_cost,
       total_rentals_count: client.total_rentals_count - 1
     )
+    scooter
 
   end
 
@@ -92,6 +109,20 @@ class Rental < ApplicationRecord
       balance: client.balance - difference,
       total_spent: client.total_spent.to_f + difference
     )
+  end
+  
+  def delegate_update_to_state
+    unless @state.on_update?
+      errors.add(:base, "Нельзя изменить аренду в текущем состоянии")
+      throw(:abort)
+    end
+  end
+
+  def delegate_delete_to_state
+    unless @state.on_delete?
+      errors.add(:base, "Нельзя удалить аренду в текущем состоянии")
+      throw(:abort)
+    end
   end
 
 end
