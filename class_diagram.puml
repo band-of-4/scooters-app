@@ -1,0 +1,104 @@
+@startuml
+
+class Client {
+  age_must_be_at_least_18()
+  + rentals()
+  + scooters()
+}
+
+class ApplicationRecord {
+  + primary_abstract_class()
+}
+
+class Scooter {
+  + available()
+  + rented()
+  + under_maintenance()
+  + rentals()
+  + clients()
+}
+
+class Rental {
+  + state()
+  + end_time_after_start_time()
+  + scooter_available_for_rental()
+  + client_has_sufficient_balance()
+  + calculate_total_cost()
+  + change_client()
+  + refund_client()
+  + recalculate_client_balance()
+}
+
+class ClientsController {
+  + index()
+  + show()
+  + new()
+  + create()
+  + edit()
+  + update()
+  + destroy()
+  + set_client()
+  + client_params()
+}
+
+class ScootersController {
+  + index()
+  + show()
+  + new()
+  + create()
+  + edit()
+  + update()
+  + destroy()
+  + set_scooter()
+  + scooter_params()
+}
+
+class RentsController {
+  + index()
+  + show()
+  + new()
+  + create()
+  + edit()
+  + update()
+  + destroy()
+  + set_rental()
+  + rental_params()
+}
+
+class ReportsController {
+  + top_clients()
+  + revenue()
+  + active_rentals()
+}
+
+class ActiveRentalsQuery {
+  + call()
+}
+
+class RevenueByDayQuery {
+  + call()
+}
+
+class TopClientsQuery {
+  + call()
+}
+
+class ActiveRentalState {
+  + validate()
+  + on_update?
+  + on_delete?
+}
+
+class CompletedRentalState {
+  + validate()
+  + on_update?
+  + on_delete?
+}
+
+class CanceledRentalState {
+  + validate()
+  + on_update?
+  + on_delete?
+}
+
+@enduml
