@@ -14,6 +14,7 @@ class Client < ApplicationRecord
   
   validate :age_must_be_at_least_18
   
+
   private
   
   def age_must_be_at_least_18
@@ -23,4 +24,5 @@ class Client < ApplicationRecord
       errors.add(:date_of_birth, 'клиент должен быть старше 18 лет')
     end
   end
+
 end
