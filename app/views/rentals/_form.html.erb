@@ -17,7 +17,7 @@
 
   <div>
     <%= f.label :scooter_id, "Самокат" %><br>
-    <%= f.collection_select :scooter_id, Scooter.all, :id, :model %>
+    <%= f.collection_select :scooter_id, Scooter.all, :id, :serial_number %>
   </div>
 
   <div>

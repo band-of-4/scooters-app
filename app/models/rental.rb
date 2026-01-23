@@ -3,6 +3,7 @@ class Rental < ApplicationRecord
   belongs_to :client
   
   validates :start_time, presence: true
+  validates :end_time, presence: true, if: -> { status == 'completed' }
   validates :status, presence: true, inclusion: { in: ['active', 'completed', 'cancelled'] }
   validates :total_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   
