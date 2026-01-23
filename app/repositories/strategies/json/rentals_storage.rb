@@ -25,7 +25,6 @@ require 'ostruct'
           data = load_data
 
           attrs["id"] = next_id(data)
-          attrs = attrs.stringify_keys
           data << attrs.to_unsafe_h.to_hash
           save_data(data)
           attrs

@@ -27,6 +27,8 @@ class ClientsRepository
     if default_storage.is_a?(Strategies::ActiveRecord::ClientsStorage)
       Client.new(attrs)
     else
+      puts 'repository'
+      puts attrs
       Strategies::Json::Client.new(attrs.merge(id: nil))
     end
   end

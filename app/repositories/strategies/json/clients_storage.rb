@@ -21,7 +21,6 @@ require 'ostruct'
           data = load_data
 
           attrs["id"] = next_id(data)
-          attrs = attrs.stringify_keys
           data << attrs.to_unsafe_h.to_hash
           save_data(data)
           attrs
@@ -31,7 +30,7 @@ require 'ostruct'
         def update(id, attrs)
           data = load_data
           client = data.find { |r| r["id"] == id.to_i }
-          return nil unless rental
+          return nil unless client
 
 
           client.merge!(attrs.stringify_keys)

@@ -18,7 +18,7 @@
         def create(attrs)
           if primary_alive?
             record = @primary.create(attrs)
-            @replica.create(record.attributes)
+            @replica.create(attrs)
             record
           else
             @replica.create(attrs)

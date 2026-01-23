@@ -61,7 +61,7 @@ class ClientsController < ApplicationController
   end
 
   def new
-    @client = clients_repo.build(total_spent: "0", total_rentals_count: "0")
+    @client = clients_repo.build
   end
 
   def create
@@ -93,7 +93,7 @@ class ClientsController < ApplicationController
   private
 
   def client_params
-    params.require(:client).permit(:first_name, :last_name, :patronymic, :email, :phone, :date_of_birth, :balance)
+    params.require(:client).permit(:first_name, :last_name, :patronymic, :email, :phone, :date_of_birth, :balance, :total_spent, :total_rentals_count)
   end
 
 
