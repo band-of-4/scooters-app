@@ -18,6 +18,7 @@ module ScooterRental
 
 
     config.autoload_paths += %W(#{config.root}/app/states)
+    config.autoload_paths += %W(#{config.root}/app/decorators)
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

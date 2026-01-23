@@ -73,7 +73,10 @@ class Rental < ApplicationRecord
     return if end_time.blank? || start_time.blank?
     
     minutes = ((end_time - start_time) / 60).ceil
-    self.total_cost = minutes * scooter.minute_rate
+    base_cost = minutes * scooter.minute_rate
+
+    decorated_client = AgeDiscountDecorator.new(client)
+    self.total_cost = base_cost * decorated_client.discount_multiplier
   end
   
   def minute_cost
