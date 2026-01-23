@@ -21,7 +21,7 @@ class Client < ApplicationRecord
     return if date_of_birth.blank?
     
     if date_of_birth > 18.years.ago.to_date
-      errors.add(:date_of_birth, 'клиент должен быть старше 18 лет')
+      errors.add(:time_error, 'клиент должен быть старше 18 лет')
     end
   end
 

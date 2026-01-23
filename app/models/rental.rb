@@ -8,7 +8,7 @@ class Rental < ApplicationRecord
   
   validate :end_time_after_start_time
   validate :scooter_available_for_rental
-  validate :client_has_sufficient_balance, on: :create
+  validate :client_has_sufficient_balance, on: [:create, :update]
   
   before_validation :calculate_total_cost, if: -> { end_time.present? && start_time.present? }
   
@@ -22,7 +22,7 @@ class Rental < ApplicationRecord
     return if end_time.blank? || start_time.blank?
     
     if end_time <= start_time
-      errors.add(:end_time, 'должно быть позже времени начала')
+      errors.add(:time_error, 'должно быть позже времени начала')
     end
   end
   
@@ -30,17 +30,27 @@ class Rental < ApplicationRecord
     return if scooter.blank? || status == 'cancelled'
     
     if scooter.status != 'available' && new_record?
-      errors.add(:scooter, 'не доступен для аренды')
+      errors.add(:available_error, 'не доступен для аренды')
     end
   end
   
   def client_has_sufficient_balance
-    return if client.blank? || minute_cost.nil?
-    
-    if client.balance < 100
-      errors.add(:client, 'недостаточно средств на балансе')
+    return if client.blank? || total_cost.nil?
+
+    if persisted? && will_save_change_to_total_cost?
+      old_cost, new_cost = total_cost_change_to_be_saved
+      difference = new_cost - old_cost
+
+      if difference > 0 && client.balance < difference
+        errors.add(:client_balance_error, "недостаточно средств для продления аренды")
+      end
+    elsif new_record?
+      if client.balance < total_cost
+        errors.add(:client_balance_error, "недостаточно средств для аренды")
+      end
     end
   end
+
   
   def calculate_total_cost
     return if end_time.blank? || start_time.blank?
@@ -59,6 +69,9 @@ class Rental < ApplicationRecord
       total_spent: client.total_spent + total_cost,
       total_rentals_count: client.total_rentals_count + 1
     )
+    scooter.update(
+      status: "rented"
+    )
   end
 
   def refund_client
@@ -67,6 +80,7 @@ class Rental < ApplicationRecord
       total_spent: client.total_spent - total_cost,
       total_rentals_count: client.total_rentals_count - 1
     )
+
   end
 
   def recalculate_client_balance
