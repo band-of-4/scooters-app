@@ -54,7 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
     t.decimal "minute_rate", precision: 8, scale: 2, default: "5.0", null: false
     t.string "model", null: false
     t.string "serial_number", null: false
-    t.string "status", default: "avaliable", null: false
+    t.string "status", default: "available", null: false
     t.datetime "updated_at", null: false
     t.index ["serial_number"], name: "index_scooters_on_serial_number", unique: true
     t.index ["status"], name: "index_scooters_on_status"
