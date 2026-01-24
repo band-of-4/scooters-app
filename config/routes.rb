@@ -9,11 +9,19 @@ Rails.application.routes.draw do
   get "reports/revenue", to: "reports#revenue", as: :reports_revenue
   get "reports/active_rentals", to: "reports#active_rentals", as: :reports_active_rentals
 
-
+  post 'scooters/undo', to: 'scooters#undo', as: :undo_scooters
+  post 'scooters/redo', to: 'scooters#redo', as: :redo_scooters
   resources :scooters
+
+  post 'clients/undo', to: 'clients#undo', as: :undo_clients
+  post 'clients/redo', to: 'clients#redo', as: :redo_clients
   resources :clients
+
+  post 'rentals/undo', to: 'rentals#undo', as: :undo_rentals
+  post 'rentals/redo', to: 'rentals#redo', as: :redo_rentals
   resources :rentals
-  root "scooters#index"
+
+  root to: redirect('/scooters')
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

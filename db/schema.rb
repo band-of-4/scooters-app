@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_23_224826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,9 +26,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
     t.integer "total_rentals_count", default: 0, null: false
     t.decimal "total_spent", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["email"], name: "index_clients_on_email", unique: true
     t.index ["last_name"], name: "index_clients_on_last_name"
     t.index ["phone"], name: "index_clients_on_phone", unique: true
+    t.index ["uuid"], name: "index_clients_on_uuid", unique: true
   end
 
   create_table "rentals", force: :cascade do |t|
@@ -40,6 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
     t.string "status", default: "active", null: false
     t.decimal "total_cost", precision: 10, scale: 2
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["client_id", "status"], name: "index_rentals_on_client_id_and_status"
     t.index ["client_id"], name: "index_rentals_on_client_id"
     t.index ["scooter_id", "status"], name: "index_rentals_on_scooter_id_and_status"
@@ -47,6 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
     t.index ["scooter_id"], name: "index_rentals_on_scooter_id"
     t.index ["start_time"], name: "index_rentals_on_start_time"
     t.index ["status"], name: "index_rentals_on_status"
+    t.index ["uuid"], name: "index_rentals_on_uuid", unique: true
   end
 
   create_table "scooters", force: :cascade do |t|
@@ -56,8 +60,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_110811) do
     t.string "serial_number", null: false
     t.string "status", default: "available", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["serial_number"], name: "index_scooters_on_serial_number", unique: true
     t.index ["status"], name: "index_scooters_on_status"
+    t.index ["uuid"], name: "index_scooters_on_uuid", unique: true
   end
 
   add_foreign_key "rentals", "clients"

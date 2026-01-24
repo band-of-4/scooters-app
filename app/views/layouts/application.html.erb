@@ -22,8 +22,61 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
   <body>
     <%= yield %>
   </body>
+<script>
+(function() {
+  'use strict';
+  
+  let isProcessing = false;
+  
+  function init() {
+    document.addEventListener('keyup', handleKeyUp);
+  }
+  
+  function handleKeyUp(e) {
+    if (e.target.matches('input, textarea, select')) return;
+    if (isProcessing) return;
+    
+    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      sendAction('undo');
+    } else if (e.ctrlKey && e.key === 'y') {
+      e.preventDefault();
+      sendAction('redo');
+    }
+  }
+  
+  async function sendAction(action) {
+    isProcessing = true;
+    
+    try {
+      const token = document.querySelector('meta[name="csrf-token"]')?.content;
+      const controller = window.location.pathname.split("/").filter(part => part.length > 0)[0];
+      
+      if (!controller || !token) return;
+      
+      const response = await fetch(`/${controller}/${action}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': token }
+      });
+      
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
+    } finally {
+      isProcessing = false;
+    }
+  }
+  
+  // Только обычная загрузка, без Turbo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  
+})();
+</script>
 </html>
