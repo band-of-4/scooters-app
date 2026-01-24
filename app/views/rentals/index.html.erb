@@ -2,6 +2,24 @@
 
 <%= link_to "Оформить аренду", new_rental_path, class: "new-button" %>
 
+<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+  <%= button_to "<--", undo_rentals_path, 
+      method: :post,
+      class: "undo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Отменяем...';"
+      } %>
+      
+  <%= button_to "-->", redo_rentals_path, 
+      method: :post,
+      class: "redo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Повторяем...';"
+      } %>
+</div>
+
 <% if @rentals.any? %>
   <ul class="rental-list" style="list-style: none; padding: 0;">
     <% @rentals.each do |rental| %>

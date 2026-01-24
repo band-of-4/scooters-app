@@ -13,9 +13,10 @@ class RentalsController < ApplicationController
   end
 
   def create
-    @rental = Rental.new(rental_params)
     @rental.state
-    if @rental.save
+    command = SaveCommand.new(Rental, rental_params)
+    @rental, success = command_manager.execute(command)
+    if success
       redirect_to @rental, notice: "Аренда успешно создана!"
     else
       render :new, status: :unprocessable_entity
@@ -27,7 +28,10 @@ class RentalsController < ApplicationController
 
   def update
     @rental.state
-    if @rental.update(rental_params)
+    command = UpdateCommand.new(Rental, @rental.uuid, rental_params)
+    @rental, success = command_manager.execute(command)
+
+    if success
       redirect_to @rental, notice: "Аренда успешно обновлена!"
     else
       render :edit, status: :unprocessable_entity
@@ -37,13 +41,32 @@ class RentalsController < ApplicationController
   def destroy
     @rental.state
     @rental.destroy
+    command = DestroyCommand.new(Rental, @rental.uuid)
+
+    command_manager.execute(command)
     redirect_to rentals_path, notice: "Аренда удалена!"
+  end
+
+  def undo
+    if command_manager.undo
+      redirect_to rentals_path, notice: "Отменено"
+    else
+      redirect_to rentals_path, alert: "Нечего отменять"
+    end
+  end
+
+  def redo
+    if command_manager.redo
+      redirect_to rentals_path, notice: "Повторено"
+    else
+      redirect_to rentals_path, alert: "Нечего повторять"
+    end
   end
 
   private
 
   def set_rental
-    @rental = Rental.find(params[:id])
+    @rental = Rental.find_by(id: params[:id])
   end
 
   def rental_params
@@ -55,5 +78,9 @@ class RentalsController < ApplicationController
       :status,
       :total_cost
     )
+  end
+
+  def command_manager
+    @command_manager ||= CommandManager.new(Rental, session.id)
   end
 end

@@ -6,7 +6,6 @@ class ScootersController < ApplicationController
   end
 
   def show
-    @scooter = Scooter.find(params[:id])
   end
 
 
@@ -15,9 +14,9 @@ class ScootersController < ApplicationController
   end
 
   def create
-    @scooter = Scooter.new(scooter_params)
-
-    if @scooter.save
+    command = SaveCommand.new(Scooter, scooter_params)
+    @scooter, success = command_manager.execute(command)
+    if success
       redirect_to @scooter, notice: "Самокат успешно создан!"
     else
       render :new, status: :unprocessable_entity
@@ -29,7 +28,9 @@ class ScootersController < ApplicationController
   end
 
   def update
-    if @scooter.update(scooter_params)
+    command = UpdateCommand.new(Scooter, @scooter.uuid, scooter_params)
+    @scooter, success = command_manager.execute(command)
+    if success
       redirect_to @scooter, notice: "Самокат успешно обновлён!"
     else
       render :edit, status: :unprocessable_entity
@@ -37,8 +38,26 @@ class ScootersController < ApplicationController
   end
 
   def destroy
-    @scooter.destroy
+    command = DestroyCommand.new(Scooter, @scooter.uuid)
+    
+    command_manager.execute(command)
     redirect_to scooters_path, notice: "Самокат удалён!"
+  end
+
+  def undo
+    if command_manager.undo
+      redirect_to scooters_path, notice: "Отменено"
+    else
+      redirect_to scooters_path, alert: "Нечего отменять"
+    end
+  end
+
+  def redo
+    if command_manager.redo
+      redirect_to scooters_path, notice: "Повторено"
+    else
+      redirect_to scooters_path, alert: "Нечего повторять"
+    end
   end
 
   private
@@ -56,5 +75,9 @@ class ScootersController < ApplicationController
 
   def scooter_params
     params.require(:scooter).permit(:model, :serial_number, :minute_rate, :status)
+  end
+
+  def command_manager
+    @command_manager ||= CommandManager.new(Scooter, session.id)
   end
 end

@@ -2,6 +2,24 @@
 
 <%= link_to "Добавить новый самокат", new_scooter_path, class: "new-button" %>
 
+<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+  <%= button_to "<--", undo_scooters_path, 
+      method: :post,
+      class: "undo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Отменяем...';"
+      } %>
+      
+  <%= button_to "-->", redo_scooters_path, 
+      method: :post,
+      class: "redo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Повторяем...';"
+      } %>
+</div>
+
 <% if @scooters.any? %>
   <ul class="scooter-list">
     <% @scooters.each do |scooter| %>
