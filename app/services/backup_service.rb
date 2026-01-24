@@ -1,6 +1,6 @@
+require Rails.root.join('app', 'exceptions', 'scooter_rental_error')
+
 class BackupService
-  class BackupError < StandardError; end
-  
   def self.create_backup(format: :json)
     begin
       data = {
@@ -17,7 +17,7 @@ class BackupService
         content = data.to_yaml
         extension = 'yaml'
       else
-        raise BackupError, "Unsupported format: #{format}"
+        raise SRBackupError, "Unsupported format: #{format}"
       end
       
       filename = "backup_#{Time.current.strftime('%Y%m%d_%H%M%S')}.#{extension}"
@@ -36,7 +36,7 @@ class BackupService
         created_at: Time.current
       }
     rescue => e
-      raise BackupError, "Backup failed: #{e.message}"
+      raise SRBackupError, "Backup failed: #{e.message}"
     end
   end
   

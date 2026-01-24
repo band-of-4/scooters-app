@@ -25,6 +25,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :storage_mode, only: [:index] do
+    collection do
+      post :switch_to_file
+      post :switch_to_database
+      post :create_backup_from_file
+      post :restore_from_file_backup
+    end
+  end
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

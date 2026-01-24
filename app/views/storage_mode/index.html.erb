@@ -1,0 +1,146 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <%= link_to root_path, class: 'btn btn-outline-secondary' do %>
+        <i class="bi bi-arrow-left"></i> На главную
+      <% end %>
+    </div>
+    <h1 class="mb-0">Управление режимом хранения данных</h1>
+    <div style="width: 120px;"></div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header <%= StorageSwitcher.database_mode? ? 'bg-success' : 'bg-warning text-dark' %>">
+      <h5 class="mb-0">Текущий режим:</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center mb-3">
+            <div>
+              <h4 class="mb-1">
+                <% if StorageSwitcher.database_mode? %>
+                  <span class="badge bg-success">ОНЛАЙН-РЕЖИМ</span>
+                <% else %>
+                  <span class="badge bg-warning">ОФФЛАЙН-РЕЖИМ</span>
+                <% end %>
+              </h4>
+              <p class="mb-0 text-muted">
+                <% if StorageSwitcher.database_mode? %>
+                  Данные сохраняются в базу данных PostgreSQL
+                <% else %>
+                  Данные сохраняются в локальный файл
+                <% end %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+      <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0"></h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Переключиться в оффлайн-режим <br> Перед переключением будет создан бекап текущих данных</strong>
+          </div>
+          
+          <%= form_tag switch_to_file_storage_mode_index_path, method: :post, 
+                data: { confirm: 'Переключиться в оффлайн-режим? Будет создан бекап текущих данных.' } do %>
+            <%= submit_tag 'Перейти в оффлайн-режим', 
+                  class: 'btn btn-warning w-100',
+                  disabled: StorageSwitcher.file_mode? %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Вернуться в онлайн-режим</h5>
+        </div>
+        <div class="card-body">
+          <p>Вернуться к работе с базой данных. Для этого:</p>
+          <ol>
+            <li>Создайте бекап оффлайн-данных (кнопка ниже)</li>
+            <li>Вернитесь в онлайн-режим</li>
+            <li>Восстановите данные из бекапа через страницу бекапов</li>
+          </ol>
+          
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Важно:</strong> При возврате в онлайн данные из файла не переносятся автоматически в БД.
+          </div>
+          
+          <%= form_tag switch_to_database_storage_mode_index_path, method: :post,
+                data: { confirm: 'Вернуться в онлайн-режим? Данные из файла не будут перенесены в БД автоматически.' } do %>
+            <%= submit_tag 'Вернуться в онлайн-режим', 
+                  class: 'btn btn-success w-100',
+                  disabled: StorageSwitcher.database_mode? %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <% if StorageSwitcher.file_mode? %>
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p>Создайте бекап текущих оффлайн-данных для восстановления в БД.</p>
+            
+            <%= form_tag create_backup_from_file_storage_mode_index_path, method: :post do %>
+              <%= submit_tag 'Создать бекап из оффлайн-данных', 
+                    class: 'btn btn-primary',
+                    data: { confirm: 'Создать бекап текущих оффлайн-данных?' } %>
+            <% end %>
+          </div>
+          
+          <div class="col-md-6">
+            <p>Восстановить последний созданный оффлайн-бекап:</p>
+            
+            <% latest_backup = @backups.find { |b| b.start_with?('offline_work') } %>
+            <% if latest_backup %>
+              <%= form_tag restore_from_file_backup_storage_mode_index_path, method: :post do %>
+                <%= hidden_field_tag :filename, latest_backup %>
+                <%= submit_tag "Восстановить из #{latest_backup}", 
+                      class: 'btn btn-warning',
+                      data: { confirm: 'ВНИМАНИЕ: Это удалит все текущие данные в БД и восстановит из бекапа. Продолжить?' } %>
+              <% end %>
+            <% else %>
+              <p class="text-muted">Нет созданных оффлайн-бекапов</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  
+</div>
+
+<style>
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .badge {
+    font-size: 0.9em;
+    padding: 0.5em 1em;
+  }
+  
+  .fs-1 {
+    font-size: 3rem !important;
+  }
+  
+  .alert ul {
+    margin-bottom: 0;
+  }
+</style>

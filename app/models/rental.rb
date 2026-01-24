@@ -16,7 +16,155 @@ class Rental < ApplicationRecord
   after_create :change_client
   after_destroy :refund_client
   after_update :recalculate_client_balance, if: :saved_change_to_total_cost?
-
+  
+  # Методы для работы со StorageSwitcher
+  class << self
+    def storage
+      StorageSwitcher.current
+    end
+    
+    def all
+      if StorageSwitcher.database_mode?
+        super
+      else
+        storage.all(self).map { |attrs| instantiate_from_storage(attrs) }
+      end
+    end
+    
+    def find(id)
+      if StorageSwitcher.database_mode?
+        super
+      else
+        attrs = storage.find(self, id)
+        instantiate_from_storage(attrs)
+      end
+    end
+    
+    def find_by(conditions)
+      if StorageSwitcher.database_mode?
+        super
+      else
+        attrs = storage.find_by(self, conditions)
+        attrs ? instantiate_from_storage(attrs) : nil
+      end
+    end
+    
+    def where(conditions)
+      if StorageSwitcher.database_mode?
+        super
+      else
+        storage.where(self, conditions).map { |attrs| instantiate_from_storage(attrs) }
+      end
+    end
+    
+    def includes(*associations)
+      if StorageSwitcher.database_mode?
+        super
+      else
+        # В файловом режиме возвращаем объект, который может имитировать Relation
+        FileStorageRelation.new(all)
+      end
+    end
+    
+    def count
+      if StorageSwitcher.database_mode?
+        super
+      else
+        storage.count(self)
+      end
+    end
+    
+    private
+    
+    def instantiate_from_storage(attributes)
+      attrs = attributes.dup
+      attrs[:id] = attrs[:id].to_i if attrs[:id]
+      attrs[:client_id] = attrs[:client_id].to_i if attrs[:client_id]
+      attrs[:scooter_id] = attrs[:scooter_id].to_i if attrs[:scooter_id]
+      
+      # Преобразуем временные метки
+      [:start_time, :end_time, :created_at, :updated_at].each do |time_field|
+        if attrs[time_field].is_a?(String)
+          attrs[time_field] = Time.parse(attrs[time_field])
+        end
+      end
+      
+      # Преобразуем decimal поля
+      [:total_cost].each do |field|
+        if attrs[field].is_a?(String)
+          attrs[field] = attrs[field].to_d
+        end
+      end
+      
+      new(attrs).tap do |record|
+        record.instance_variable_set(:@new_record, false) if attrs[:id]
+      end
+    end
+  end
+  
+  # Переопределяем методы экземпляра
+  def save
+    if StorageSwitcher.database_mode?
+      super
+    else
+      return false unless valid?
+      
+      attributes_for_storage = attributes.symbolize_keys
+      
+      if new_record?
+        result = self.class.storage.create(self.class, attributes_for_storage)
+        self.id = result[:id]
+      else
+        self.class.storage.update(self.class, id, attributes_for_storage)
+      end
+      
+      true
+    end
+  end
+  
+  def update(attributes)
+    if StorageSwitcher.database_mode?
+      super
+    else
+      assign_attributes(attributes)
+      save
+    end
+  end
+  
+  def destroy
+    if StorageSwitcher.database_mode?
+      super
+    else
+      self.class.storage.destroy(self.class, id)
+      freeze
+    end
+  end
+  
+  def persisted?
+    if StorageSwitcher.database_mode?
+      super
+    else
+      id.present?
+    end
+  end
+  
+  # Методы для доступа к связанным объектам в файловом режиме
+  def client
+    if StorageSwitcher.database_mode?
+      super
+    else
+      @client ||= Client.find_by(id: client_id) if client_id
+    end
+  end
+  
+  def scooter
+    if StorageSwitcher.database_mode?
+      super
+    else
+      @scooter ||= Scooter.find_by(id: scooter_id) if scooter_id
+    end
+  end
+  
   private
   
   def end_time_after_start_time
@@ -28,7 +176,7 @@ class Rental < ApplicationRecord
   end
   
   def scooter_available_for_rental
-    return if scooter.blank? || status == 'cancelled'
+    return if scooter.blank? || status != 'active'
     
     if scooter.status != 'available' && new_record?
       errors.add(:available_error, 'не доступен для аренды')
@@ -38,8 +186,8 @@ class Rental < ApplicationRecord
   def client_has_sufficient_balance
     return if client.blank? || total_cost.nil?
 
-    if persisted? && will_save_change_to_total_cost?
-      old_cost, new_cost = total_cost_change_to_be_saved
+    if persisted? 
+      old_cost, new_cost = [total_cost_in_database, total_cost]
       difference = new_cost - old_cost
 
       if difference > 0 && client.balance < difference
@@ -65,6 +213,7 @@ class Rental < ApplicationRecord
   end
 
   def change_client
+    # Важно: client.update и scooter.update будут использовать наш StorageSwitcher
     client.update(
       balance: client.balance - total_cost,
       total_spent: client.total_spent + total_cost,
@@ -81,7 +230,6 @@ class Rental < ApplicationRecord
       total_spent: client.total_spent - total_cost,
       total_rentals_count: client.total_rentals_count - 1
     )
-
   end
 
   def recalculate_client_balance
@@ -93,5 +241,4 @@ class Rental < ApplicationRecord
       total_spent: client.total_spent.to_f + difference
     )
   end
-
 end
