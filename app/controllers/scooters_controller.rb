@@ -44,7 +44,12 @@ class ScootersController < ApplicationController
   private
 
   def set_scooter
-    @scooter = Scooter.find_by(id: params[:id])
+    if StorageSwitcher.database_mode?
+      @scooter = Scooter.find_by(id: params[:id])
+    else
+      # В файловом режиме ищем самокат
+      @scooter = Scooter.all.find { |s| s.id.to_s == params[:id].to_s }
+    end
     rescue ActiveRecord::RecordNotFound
       @scooter = nil
   end
