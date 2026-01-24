@@ -3,8 +3,10 @@ class DestroyCommand < BaseCommand
     uuid = @params[0]
     
     record = @model_class.find_by(uuid: uuid)
-    @backup = { attributes: record.attributes.dup }
+    return [record, false] if record.nil?
     
+    @backup = { attributes: record.attributes.dup }
+
     record.destroy
     [record, true]
   end

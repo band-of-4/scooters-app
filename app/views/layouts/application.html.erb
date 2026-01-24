@@ -1,35 +1,390 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Scooter Rental" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Scooter Rental">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<html lang="ru" data-bs-theme="light">
+<head>
+  <title><%= content_for(:title) || "Scooter Rental" %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Scooter Rental">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%= yield :head %>
+  <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+  <%# PWA manifest %>
+  <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
-  <body>
-    <li class="nav-item">
-      <%= link_to 'Backups', backups_path, class: 'nav-link' %>
-    </li>
-    <li class="nav-item">
-      <%= link_to 'Storage Mode', storage_mode_index_path, class: 'nav-link' %>
-    </li>
-    <%= yield %>
-  </body>
+  <!-- Favicon -->
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
+      --success-color: #4cc9f0;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+    
+    body {
+      background-color: #f5f7fb;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding-top: 20px;
+      min-height: 100vh;
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+    }
+    
+    .card {
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      margin-bottom: 1.5rem;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    
+    .btn-outline-primary {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    
+    .table {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .table thead th {
+      background-color: #f1f5fd;
+      border-bottom: 2px solid #e0e7ff;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+    
+    .badge {
+      padding: 0.4em 0.8em;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    .nav-tabs {
+      border-bottom: 2px solid #e0e7ff;
+    }
+    
+    .nav-tabs .nav-link {
+      border: none;
+      color: #6c757d;
+      font-weight: 500;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px 8px 0 0;
+      margin-right: 0.5rem;
+    }
+    
+    .nav-tabs .nav-link.active {
+      background-color: white;
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+    
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .alert {
+      border-radius: var(--border-radius);
+      border: none;
+    }
+    
+    .pagination .page-link {
+      color: var(--primary-color);
+      border-radius: 8px;
+      margin: 0 3px;
+    }
+    
+    .pagination .active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      box-shadow: var(--box-shadow);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin: 0.5rem 0;
+    }
+    
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .client-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .action-buttons .btn {
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      
+      .card {
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+  
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+  <div class="container-fluid">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded-3 shadow-sm mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <i class="bi bi-scooter me-2" style="font-size: 1.5rem;"></i>
+          <span>Scooter Rental</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <%= link_to clients_path, class: "nav-link #{'active fw-bold' if current_page?(clients_path)}" do %>
+                <i class="bi bi-people me-1"></i> Клиенты
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to scooters_path, class: "nav-link #{'active fw-bold' if current_page?(scooters_path)}" do %>
+                <i class="bi bi-scooter me-1"></i> Самокаты
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to rentals_path, class: "nav-link #{'active fw-bold' if current_page?(rentals_path)}" do %>
+                <i class="bi bi-clock-history me-1"></i> Аренды
+              <% end %>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-graph-up me-1"></i> Отчеты
+              </a>
+              <ul class="dropdown-menu">
+                <li><%= link_to "Активные аренды", reports_active_rentals_path, class: "dropdown-item" %></li>
+                <li><%= link_to "Доход по дням", reports_revenue_path, class: "dropdown-item" %></li>
+                <li><%= link_to "Топ клиентов", reports_top_clients_path, class: "dropdown-item" %></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <%= link_to backups_path, class: "nav-link" do %>
+                <i class="bi bi-hdd-stack me-1"></i> Бэкапы
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to storage_mode_index_path, class: "nav-link" do %>
+                <i class="bi bi-database me-1"></i> Хранилище
+              <% end %>
+            </li>
+          </ul>
+          
+          <div class="d-flex align-items-center">
+            
+            
+            <span class="navbar-text text-muted">
+              <i class="bi bi-calendar-check me-1"></i> <%= Date.current.strftime("%d.%m.%Y") %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container-fluid px-4">
+      <!-- Flash Messages -->
+      <% if flash.any? %>
+        <div class="row mb-4">
+          <div class="col-12">
+            <% flash.each do |type, message| %>
+              <div class="alert alert-<%= bootstrap_alert_class(type) %> alert-dismissible fade show" role="alert">
+                <%= message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      
+      <!-- Page Header -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h1 class="h3 mb-0 fw-bold text-dark"><%= content_for(:page_title) || yield(:title) || "Панель управления" %></h1>
+              <% if content_for?(:page_subtitle) %>
+                <p class="text-muted mb-0"><%= yield :page_subtitle %></p>
+              <% end %>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <!-- Undo/Redo Buttons -->
+              <% if content_for?(:undo_redo) %>
+                <div class="btn-group" role="group">
+                  <%= button_to undo_clients_path, 
+                      method: :post,
+                      class: "btn btn-outline-secondary",
+                      form: { 
+                        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = '<i class=\"bi bi-arrow-counterclockwise\"></i>';"
+                      },
+                      data: { bs_toggle: "tooltip", bs_title: "Отменить" } do %>
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  <% end %>
+                  
+                  <%= button_to redo_clients_path, 
+                      method: :post,
+                      class: "btn btn-outline-secondary",
+                      form: { 
+                        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = '<i class=\"bi bi-arrow-clockwise\"></i>';"
+                      },
+                      data: { bs_toggle: "tooltip", bs_title: "Повторить" } do %>
+                    <i class="bi bi-arrow-clockwise"></i>
+                  <% end %>
+                </div>
+              <% end %>
+              
+              <!-- Action Buttons -->
+              <% if content_for?(:action_buttons) %>
+                <%= yield :action_buttons %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Page Content -->
+      <%= yield %>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="mt-5 py-3 text-center text-muted border-top">
+      <div class="container">
+        <small>
+          <i class="bi bi-c-circle"></i> <%= Date.current.year %> Scooter Rental System
+          <span class="mx-2">•</span>
+          v1.0.0
+        </small>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JavaScript -->
+  <script>
+    // Initialize Bootstrap components
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+      
+      // Initialize popovers
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+      var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+      })
+      
+      // Theme toggle
+      const themeToggle = document.querySelector('[data-bs-theme-toggle]')
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          const currentTheme = document.documentElement.getAttribute('data-bs-theme')
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+          document.documentElement.setAttribute('data-bs-theme', newTheme)
+          localStorage.setItem('theme', newTheme)
+        })
+      }
+    })
+  </script>
+</body>
 </html>

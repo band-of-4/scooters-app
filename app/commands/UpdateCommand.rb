@@ -4,6 +4,8 @@ class UpdateCommand < BaseCommand
     new_attributes = @params[1]
     
     record = @model_class.find_by(uuid: uuid)
+    return [record, false] if record.nil?
+    
     @backup = { old_attributes: record.attributes.dup }
     
     if record.update(new_attributes)
