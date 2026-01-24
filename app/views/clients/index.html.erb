@@ -2,6 +2,24 @@
 
 <%= link_to "Добавить нового клиента", new_client_path, class: "new-button" %>
 
+<div style="margin-bottom: 20px; display: flex; gap: 10px;">
+  <%= button_to "<--", undo_clients_path, 
+      method: :post,
+      class: "undo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Отменяем...';"
+      } %>
+      
+  <%= button_to "-->", redo_clients_path, 
+      method: :post,
+      class: "redo-button",
+      form: { 
+        style: "display: inline;",
+        onsubmit: "this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = 'Повторяем...';"
+      } %>
+</div>
+
 <% if @clients.any? %>
   <ul class="client-list" style="list-style: none; padding: 0;">
     <% @clients.each do |client| %>
