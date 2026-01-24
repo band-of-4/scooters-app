@@ -13,9 +13,9 @@ class RentalsController < ApplicationController
   end
 
   def create
-    @rental.state
     command = SaveCommand.new(Rental, rental_params)
     @rental, success = command_manager.execute(command)
+    @rental.state
     if success
       redirect_to @rental, notice: "Аренда успешно создана!"
     else
@@ -27,9 +27,9 @@ class RentalsController < ApplicationController
   end
 
   def update
-    @rental.state
     command = UpdateCommand.new(Rental, @rental.uuid, rental_params)
     @rental, success = command_manager.execute(command)
+    @rental.state
 
     if success
       redirect_to @rental, notice: "Аренда успешно обновлена!"
@@ -40,7 +40,6 @@ class RentalsController < ApplicationController
 
   def destroy
     @rental.state
-    @rental.destroy
     command = DestroyCommand.new(Rental, @rental.uuid)
 
     command_manager.execute(command)
