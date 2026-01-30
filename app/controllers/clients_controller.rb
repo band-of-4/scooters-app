@@ -62,7 +62,13 @@ class ClientsController < ApplicationController
   private
 
   def set_client
-    @client = Client.find_by(id: params[:id])
+    if StorageSwitcher.database_mode?
+      @client = Client.find_by(id: params[:id])
+    else
+      @client = Client.all.find { |s| s.id.to_s == params[:id].to_s }
+    end
+    rescue ActiveRecord::RecordNotFound
+      @client = nil
   end
 
   def client_params

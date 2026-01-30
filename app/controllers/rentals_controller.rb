@@ -15,7 +15,7 @@ class RentalsController < ApplicationController
   def create
     command = SaveCommand.new(Rental, rental_params)
     @rental, success = command_manager.execute(command)
-    @rental.state
+    # @rental.state
     if success
       redirect_to @rental, notice: "Аренда успешно создана!"
     else
@@ -29,7 +29,7 @@ class RentalsController < ApplicationController
   def update
     command = UpdateCommand.new(Rental, @rental.uuid, rental_params)
     @rental, success = command_manager.execute(command)
-    @rental.state
+    # @rental.state
 
     if success
       redirect_to @rental, notice: "Аренда успешно обновлена!"
@@ -39,7 +39,7 @@ class RentalsController < ApplicationController
   end
 
   def destroy
-    @rental.state
+    # @rental.state
     command = DestroyCommand.new(Rental, @rental.uuid)
 
     command_manager.execute(command)
@@ -65,7 +65,13 @@ class RentalsController < ApplicationController
   private
 
   def set_rental
-    @rental = Rental.find_by(id: params[:id])
+    if StorageSwitcher.database_mode?
+      @rental = Rental.find_by(id: params[:id])
+    else
+      @rental = Rental.all.find { |s| s.id.to_s == params[:id].to_s }
+    end
+    rescue ActiveRecord::RecordNotFound
+      @rental = nil
   end
 
   def rental_params

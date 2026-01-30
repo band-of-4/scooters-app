@@ -16,9 +16,9 @@ class Rental < ApplicationRecord
   before_validation :calculate_total_cost, if: -> { end_time.present? && start_time.present? }
   
 
-  before_update :delegate_update_to_state
+  #before_update :delegate_update_to_state
 
-  before_destroy :delegate_delete_to_state
+  #before_destroy :delegate_delete_to_state
 
 
   after_create :change_client
